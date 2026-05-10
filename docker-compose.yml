@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # Base de datos para Inventario
+  db-inventario:
+    image: postgres:15-alpine
+    container_name: smartlogix-db-inventario
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: db_inventario
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_inventario:/var/lib/postgresql/data
+    networks:
+      - smartlogix-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_inventario"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Base de datos para Pedidos
+  db-pedidos:
+    image: postgres:15-alpine
+    container_name: smartlogix-db-pedidos
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: db_pedidos
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_pedidos:/var/lib/postgresql/data
+    networks:
+      - smartlogix-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_pedidos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Microservicio de Inventario
+  ms-inventario:
+    build: 
+      context: ./backend/ms-inventario
+    container_name: smartlogix-ms-inventario
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-inventario:5432/db_inventario
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin_password
+    depends_on:
+      db-inventario:
+        condition: service_healthy
+    networks:
+      - smartlogix-network
+
+  # Microservicio de Pedidos
+  ms-pedidos:
+    build: 
+      context: ./backend/ms-pedidos
+    container_name: smartlogix-ms-pedidos
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-pedidos:5432/db_pedidos
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin_password
+      # Configuración de Resilience4j (Circuit Breaker)
+      - RESILIENCE4J_CIRCUITBREAKER_INSTANCES_INVENTARIO_REGISTERHEALTHINDICATOR=true
+    depends_on:
+      db-pedidos:
+        condition: service_healthy
+    networks:
+      - smartlogix-network
+
+  # Backend For Frontend (API Gateway)
+  bff:
+    build: 
+      context: ./backend/bff
+    container_name: smartlogix-bff
+    ports:
+      - "8080:8080"
+    environment:
+      - INVENTARIO_SERVICE_URL=http://ms-inventario:8081
+      - PEDIDOS_SERVICE_URL=http://ms-pedidos:8082
+    depends_on:
+      - ms-inventario
+      - ms-pedidos
+    networks:
+      - smartlogix-network
+
+  # Frontend (React)
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: smartlogix-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BFF_URL=http://localhost:8080
+    depends_on:
+      - bff
+    networks:
+      - smartlogix-network
+
+networks:
+  smartlogix-network:
+    driver: bridge
+
+volumes:
+  pgdata_inventario:
+  pgdata_pedidos:
