@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: bff-gateway
+
+smartlogix:
+  inventario:
+    url: ${INVENTARIO_SERVICE_URL:http://localhost:8081}
+  pedidos:
+    url: ${PEDIDOS_SERVICE_URL:http://localhost:8082}
+
+# Configuración de logs
+logging:
+  level:
+    com.smartlogix.bff: DEBUG
