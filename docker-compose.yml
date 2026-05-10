@@ -71,6 +71,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-pedidos:5432/db_pedidos
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin_password
+      - INVENTARIO_SERVICE_URL=http://ms-inventario:8081
       # Configuración de Resilience4j (Circuit Breaker)
       - RESILIENCE4J_CIRCUITBREAKER_INSTANCES_INVENTARIO_REGISTERHEALTHINDICATOR=true
     depends_on:
