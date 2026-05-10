@@ -44,7 +44,8 @@ services:
   # Microservicio de Inventario
   ms-inventario:
     build: 
-      context: ./backend/ms-inventario
+      context: ./backend
+      dockerfile: ms-inventario/Dockerfile
     container_name: smartlogix-ms-inventario
     ports:
       - "8081:8081"
@@ -61,7 +62,8 @@ services:
   # Microservicio de Pedidos
   ms-pedidos:
     build: 
-      context: ./backend/ms-pedidos
+      context: ./backend
+      dockerfile: ms-pedidos/Dockerfile
     container_name: smartlogix-ms-pedidos
     ports:
       - "8082:8082"
@@ -80,7 +82,8 @@ services:
   # Backend For Frontend (API Gateway)
   bff:
     build: 
-      context: ./backend/bff
+      context: ./backend
+      dockerfile: bff/Dockerfile
     container_name: smartlogix-bff
     ports:
       - "8080:8080"
