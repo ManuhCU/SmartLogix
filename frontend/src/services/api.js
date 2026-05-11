@@ -1,5 +1,6 @@
-// Utiliza la variable de entorno o cae por defecto al localhost:8080 del BFF
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || 'http://localhost:8080/api';
+// Utiliza la variable de entorno o cae por defecto al localhost:9090 del BFF
+// El navegador del host debe usar localhost:9090 para acceder al servicio bff.
+const API_BASE_URL = process.env.REACT_APP_BFF_URL || 'http://localhost:9090/api';
 
 export const api = {
   // Función genérica para hacer requests
@@ -48,19 +49,6 @@ export const api = {
       body: JSON.stringify(pedido),
     });
   },
-};
-
-export default api;
-};
-
-export const realizarCompra = async (pedidoDTO) => {
-  try {
-    const response = await api.post('/comprar', pedidoDTO);
-    return response.data;
-  } catch (error) {
-    console.error('Error al realizar compra:', error);
-    throw error;
-  }
 };
 
 export default api;

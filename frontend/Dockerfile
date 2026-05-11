@@ -6,8 +6,8 @@ WORKDIR /app
 # Copiar archivos de dependencias primero para aprovechar cache de Docker
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm ci --only=production && npm cache clean --force
+# Instalar todas las dependencias (incluyendo dev dependencies para react-scripts)
+RUN npm install
 
 # Copiar código fuente
 COPY . .

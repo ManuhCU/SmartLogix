@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import OrderModal from '../components/OrderModal';
-import { getCatalogo } from '../services/api';
+import { api } from '../services/api';
 
 const Catalog = () => {
   const [productos, setProductos] = useState([]);
@@ -14,7 +14,7 @@ const Catalog = () => {
   const fetchCatalogo = async () => {
     try {
       setLoading(true);
-      const data = await getCatalogo();
+      const data = await api.getCatalogo();
       setProductos(data);
       setError(null);
     } catch (err) {

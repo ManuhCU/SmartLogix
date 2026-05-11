@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './OrderModal.css';
-import { realizarCompra } from '../services/api';
+import { api } from '../services/api';
 
 const OrderModal = ({ producto, onClose, onPurchaseSuccess }) => {
   const [cantidad, setCantidad] = useState(1);
@@ -22,7 +22,7 @@ const OrderModal = ({ producto, onClose, onPurchaseSuccess }) => {
         cantidad: parseInt(cantidad, 10),
       };
       
-      const response = await realizarCompra(pedidoDTO);
+      const response = await api.realizarCompra(pedidoDTO);
       
       if (response.estado === 'FALLIDO') {
         // Fallback de Circuit Breaker
