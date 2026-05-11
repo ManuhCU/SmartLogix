@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class BffService {
 
     private final InventarioClient inventarioClient;
     private final PedidosClient pedidosClient;
+
+    public BffService(InventarioClient inventarioClient, PedidosClient pedidosClient) {
+        this.inventarioClient = inventarioClient;
+        this.pedidosClient = pedidosClient;
+    }
 
     public List<ProductoDTO> obtenerCatalogo() {
         return inventarioClient.listarTodos();

@@ -15,12 +15,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class BffController {
 
     private final BffService bffService;
     private final AuthService authService;
+
+    public BffController(BffService bffService, AuthService authService) {
+        this.bffService = bffService;
+        this.authService = authService;
+    }
 
     @GetMapping("/store/catalogo")
     public ResponseEntity<List<ProductoDTO>> obtenerCatalogo() {
