@@ -56,8 +56,23 @@ public class DataSeeder implements CommandLineRunner {
                     .stockActual(0) // Agotado para probar la interfaz
                     .build();
 
-            productoRepository.saveAll(Arrays.asList(p1, p2, p3, p4));
-            
+            Producto p5 = Producto.builder()
+                    .sku("SKU-1005")
+                    .nombre("Smartwatch Series 9")
+                    .descripcion("Reloj inteligente con monitor de ritmo cardíaco y GPS integrado.")
+                    .precio(new BigDecimal("399.00"))
+                    .stockActual(30)
+                    .build();
+
+            Producto p6 = Producto.builder()
+                    .sku("SKU-1006")
+                    .nombre("Mouse Gamer Inalámbrico")
+                    .descripcion("Mouse ergonómico de 16000 DPI con batería de larga duración.")
+                    .precio(new BigDecimal("85.50"))
+                    .stockActual(15)
+                    .build();
+
+            productoRepository.saveAll(Arrays.asList(p1, p2, p3, p4, p5, p6));            
             System.out.println("¡Productos de prueba cargados exitosamente!");
         }
     }
