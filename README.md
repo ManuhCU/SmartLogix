@@ -29,19 +29,58 @@ La solución es un sistema basado en Microservicios, desarrollado con Spring Boo
 ```
 
 ## Ejecución con Docker Compose
+
+### Opción 1: Script Automático (Recomendado)
+Ejecuta el script correspondiente a tu sistema operativo:
+
+**Windows:**
+```cmd
+start-docker.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x start-docker.sh
+./start-docker.sh
+```
+
+### Opción 2: Manual
 Para levantar toda la infraestructura (Bases de datos, Microservicios, BFF y Frontend):
 ```bash
 cd SmartLogix
-docker-compose up --build
+docker compose up --build
 ```
 
-Esto levantará:
-- PostgreSQL Inventario (puerto 5432)
-- PostgreSQL Pedidos (puerto 5433)
-- MS Inventario (puerto 8081)
-- MS Pedidos (puerto 8082)
-- BFF (puerto 8080)
-- Frontend (puerto 3000)
+### Servicios Disponibles
+Una vez levantados los contenedores, estarán disponibles en:
+
+| Servicio | URL | Descripción |
+|----------|-----|-------------|
+| **Frontend** | http://localhost:3000 | Interfaz de usuario React |
+| **BFF API** | http://localhost:9090 | Backend For Frontend |
+| **MS Inventario** | http://localhost:8081 | Microservicio de Inventario |
+| **MS Pedidos** | http://localhost:8082 | Microservicio de Pedidos |
+| **DB Inventario** | localhost:5432 | PostgreSQL Inventario |
+| **DB Pedidos** | localhost:5433 | PostgreSQL Pedidos |
+
+### Credenciales de Prueba
+- **Admin**: `admin` / `admin123`
+- **Usuario**: `user1` / `password123`
+
+### Comandos Útiles
+```bash
+# Ver estado de contenedores
+docker compose ps
+
+# Ver logs de un servicio específico
+docker compose logs -f frontend
+
+# Detener todos los servicios
+docker compose down
+
+# Reconstruir y reiniciar
+docker compose up --build --force-recreate
+```
 
 ## Pruebas y Calidad
 Para correr las pruebas unitarias con JUnit y Mockito, junto con la generación del reporte de cobertura (Jacoco):
