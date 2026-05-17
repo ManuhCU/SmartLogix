@@ -10,6 +10,8 @@ smartlogix:
     url: ${INVENTARIO_SERVICE_URL:http://localhost:8081}
   pedidos:
     url: ${PEDIDOS_SERVICE_URL:http://localhost:8082}
+  usuarios:
+    url: ${USERS_SERVICE_URL:http://localhost:8083}
 
 # Configuración de logs
 logging:

@@ -1,38 +1,32 @@
 package com.smartlogix.bff.service;
 
+import com.smartlogix.bff.client.UsuariosClient;
+import com.smartlogix.bff.model.LoginRequest;
 import com.smartlogix.bff.model.User;
+import com.smartlogix.bff.model.UsuarioDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    private Map<String, User> users = new HashMap<>();
-
-    public AuthService() {
-        // Usuarios por defecto
-        users.put("admin", new User("admin", "admin123", "ADMIN"));
-        users.put("user1", new User("user1", "password123", "USER"));
-        users.put("user2", new User("user2", "password456", "USER"));
-    }
+    private final UsuariosClient usuariosClient;
 
     public User authenticate(String username, String password) {
-        User user = users.get(username);
-        
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
-        
-        return null;
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        UsuarioDTO usuario = usuariosClient.autenticar(loginRequest);
+        return new User(usuario.getUsername(), password, usuario.getRole());
     }
 
-    public void registerUser(String username, String password, String role) {
-        if (!users.containsKey(username)) {
-            users.put(username, new User(username, password, role));
-        }
+    public List<UsuarioDTO> getAllUsers() {
+        return usuariosClient.listarTodos();
     }
 
     public User getUserByUsername(String username) {
-        return users.get(username);
+        UsuarioDTO usuario = usuariosClient.obtenerPorUsername(username);
+        return new User(usuario.getUsername(), null, usuario.getRole());
     }
 }

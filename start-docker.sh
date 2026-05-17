@@ -6,6 +6,8 @@ echo "========================================"
 echo
 
 echo "Deteniendo contenedores anteriores..."
+# Cambiar al directorio del script para asegurar la ruta correcta
+cd "$(dirname "$0")"
 docker compose down
 
 echo

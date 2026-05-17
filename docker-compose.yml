@@ -39,6 +39,26 @@ services:
       timeout: 5s
       retries: 5
 
+  # Base de datos para Usuarios
+  db-usuarios:
+    image: postgres:15-alpine
+    container_name: smartlogix-db-usuarios
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: db_usuarios
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_usuarios:/var/lib/postgresql/data
+    networks:
+      - smartlogix-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_usuarios"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # Microservicio de Inventario
   ms-inventario:
     build: 
@@ -78,6 +98,24 @@ services:
     networks:
       - smartlogix-network
 
+  # Microservicio de Usuarios
+  ms-usuarios:
+    build:
+      context: ./backend
+      dockerfile: ms-usuarios/Dockerfile
+    container_name: smartlogix-ms-usuarios
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-usuarios:5432/db_usuarios
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin_password
+    depends_on:
+      db-usuarios:
+        condition: service_healthy
+    networks:
+      - smartlogix-network
+
   # Backend For Frontend (API Gateway)
   bff:
     build: 
@@ -89,9 +127,11 @@ services:
     environment:
       - INVENTARIO_SERVICE_URL=http://ms-inventario:8081
       - PEDIDOS_SERVICE_URL=http://ms-pedidos:8082
+      - USERS_SERVICE_URL=http://ms-usuarios:8083
     depends_on:
       - ms-inventario
       - ms-pedidos
+      - ms-usuarios
     networks:
       - smartlogix-network
 
@@ -119,3 +159,4 @@ networks:
 volumes:
   pgdata_inventario:
   pgdata_pedidos:
+  pgdata_usuarios:

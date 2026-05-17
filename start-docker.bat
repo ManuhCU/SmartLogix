@@ -4,6 +4,9 @@ echo    SmartLogix - Docker Setup
 echo ========================================
 echo.
 
+REM Cambiar al directorio del script para asegurar la ruta correcta
+pushd "%~dp0"
+
 echo Deteniendo contenedores anteriores...
 docker compose down
 
@@ -37,4 +40,7 @@ echo ========================================
 echo.
 echo Para ver logs: docker compose logs -f [servicio]
 echo Para detener: docker compose down
+
+REM Restaurar directorio previo
+popd
 echo.
