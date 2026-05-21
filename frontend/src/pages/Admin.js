@@ -43,44 +43,97 @@ const Admin = () => {
         }
     };
 
-    const handleCreateProduct = async () => {
-        try {
-            const sku = prompt('SKU del producto:');
-            if (!sku) return;
-            const nombre = prompt('Nombre del producto:');
-            const descripcion = prompt('Descripción:');
-            const precioRaw = prompt('Precio (numérico):', '0');
-            const precio = parseFloat(precioRaw) || 0;
-            const stockRaw = prompt('Stock inicial (entero):', '0');
-            const stockActual = parseInt(stockRaw, 10) || 0;
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('create');
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [productForm, setProductForm] = useState({
+        sku: '',
+        nombre: '',
+        descripcion: '',
+        precio: '0',
+        stockActual: '0',
+        disponible: true,
+    });
 
-            const producto = { sku, nombre, descripcion, precio, stockActual, disponible: stockActual > 0 };
-            await api.createProduct(producto);
+    const resetProductForm = () => {
+        setProductForm({
+            sku: '',
+            nombre: '',
+            descripcion: '',
+            precio: '0',
+            stockActual: '0',
+            disponible: true,
+        });
+        setEditingProduct(null);
+    };
+
+    const openCreateProductModal = () => {
+        resetProductForm();
+        setModalMode('create');
+        setModalOpen(true);
+    };
+
+    const openEditProductModal = (producto) => {
+        setEditingProduct(producto);
+        setProductForm({
+            sku: producto.sku,
+            nombre: producto.nombre || '',
+            descripcion: producto.descripcion || '',
+            precio: String(producto.precio || '0'),
+            stockActual: String(producto.stockActual || '0'),
+            disponible: producto.disponible ?? (producto.stockActual > 0),
+        });
+        setModalMode('edit');
+        setModalOpen(true);
+    };
+
+    const handleProductFormChange = (event) => {
+        const { name, value, type, checked } = event.target;
+        setProductForm((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
+    const handleSaveProduct = async () => {
+        try {
+            const precio = parseFloat(productForm.precio.replace(',', '.')) || 0;
+            const stockActual = parseInt(productForm.stockActual, 10) || 0;
+            const productoPayload = {
+                sku: productForm.sku.trim(),
+                nombre: productForm.nombre.trim(),
+                descripcion: productForm.descripcion.trim(),
+                precio,
+                stockActual,
+                disponible: productForm.disponible && stockActual > 0,
+            };
+
+            if (!productoPayload.sku || !productoPayload.nombre) {
+                alert('SKU y nombre son obligatorios.');
+                return;
+            }
+
+            if (modalMode === 'create') {
+                await api.createProduct(productoPayload);
+            } else {
+                await api.updateProduct(editingProduct.sku, productoPayload);
+            }
+
             await fetchProductos();
+            setModalOpen(false);
+            resetProductForm();
         } catch (err) {
-            console.error('Error creating product:', err);
-            alert('No se pudo crear el producto');
+            console.error('Error saving producto:', err);
+            alert('No se pudo guardar el producto. Verifica los datos e inténtalo de nuevo.');
         }
     };
 
+    const handleCreateProduct = async () => {
+        openCreateProductModal();
+    };
+
     const handleEditProduct = async (producto) => {
-        try {
-            const newStockRaw = prompt('Nuevo stock para ' + producto.nombre + ':', producto.stockActual || 0);
-            if (newStockRaw === null) return;
-            const newStock = parseInt(newStockRaw, 10) || 0;
-            const delta = newStock - (producto.stockActual || 0);
-            if (delta < 0) {
-                // descontar stock via API (cantidad positiva)
-                await api.descontarStock(producto.sku, Math.abs(delta));
-            } else if (delta > 0) {
-                // No hay endpoint para sumar stock, para simplicidad recargar
-                alert('Aumenta el stock desde la base de datos o implementa un endpoint de actualización.');
-            }
-            await fetchProductos();
-        } catch (err) {
-            console.error('Error updating product:', err);
-            alert('No se pudo actualizar el producto');
-        }
+        openEditProductModal(producto);
     };
 
     const handleDeleteProduct = async (producto) => {
@@ -244,6 +297,84 @@ const Admin = () => {
                     )}
 
                     {/* Tab: Pedidos */}
+                    {modalOpen && (
+                        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header">
+                                    <h3>{modalMode === 'create' ? 'Agregar Producto' : 'Editar Producto'}</h3>
+                                    <button className="close-modal" onClick={() => setModalOpen(false)}>×</button>
+                                </div>
+                                <div className="modal-body">
+                                    <label>
+                                        SKU
+                                        <input
+                                            type="text"
+                                            name="sku"
+                                            value={productForm.sku}
+                                            onChange={handleProductFormChange}
+                                            disabled={modalMode === 'edit'}
+                                        />
+                                    </label>
+                                    <label>
+                                        Nombre
+                                        <input
+                                            type="text"
+                                            name="nombre"
+                                            value={productForm.nombre}
+                                            onChange={handleProductFormChange}
+                                        />
+                                    </label>
+                                    <label>
+                                        Descripción
+                                        <textarea
+                                            name="descripcion"
+                                            value={productForm.descripcion}
+                                            onChange={handleProductFormChange}
+                                        />
+                                    </label>
+                                    <label>
+                                        Precio
+                                        <input
+                                            type="number"
+                                            name="precio"
+                                            value={productForm.precio}
+                                            onChange={handleProductFormChange}
+                                            step="0.01"
+                                            min="0"
+                                        />
+                                    </label>
+                                    <label>
+                                        Stock actual
+                                        <input
+                                            type="number"
+                                            name="stockActual"
+                                            value={productForm.stockActual}
+                                            onChange={handleProductFormChange}
+                                            min="0"
+                                        />
+                                    </label>
+                                    <label className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            name="disponible"
+                                            checked={productForm.disponible}
+                                            onChange={handleProductFormChange}
+                                        />
+                                        Disponible
+                                    </label>
+                                </div>
+                                <div className="modal-actions">
+                                    <button className="btn-secondary" onClick={() => setModalOpen(false)}>
+                                        Cancelar
+                                    </button>
+                                    <button className="btn-primary" onClick={handleSaveProduct}>
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'pedidos' && (
                         <section className="tab-content">
                             <div className="section-header">

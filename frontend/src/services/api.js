@@ -80,6 +80,12 @@ export const api = {
       body: JSON.stringify(product),
     });
   },
+  async updateProduct(sku, product) {
+    return this.request(`/store/productos/${encodeURIComponent(sku)}`, {
+      method: 'PUT',
+      body: JSON.stringify(product),
+    });
+  },
   async descontarStock(sku, cantidad) {
     return this.request(`/store/productos/${encodeURIComponent(sku)}/descontar-stock?cantidad=${encodeURIComponent(cantidad)}`, {
       method: 'PUT',

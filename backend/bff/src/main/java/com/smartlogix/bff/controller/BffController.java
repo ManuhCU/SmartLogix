@@ -92,6 +92,13 @@ public class BffController {
         return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
+    @PutMapping("/store/productos/{sku}")
+    public ResponseEntity<ProductoDTO> actualizarProducto(@PathVariable String sku,
+                                                         @RequestBody ProductoDTO productoDTO) {
+        ProductoDTO actualizado = inventarioClient.actualizarProducto(sku, productoDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
     @PutMapping("/store/productos/{sku}/descontar-stock")
     public ResponseEntity<Void> descontarStock(@PathVariable String sku, @RequestParam Integer cantidad) {
         inventarioClient.descontarStock(sku, cantidad);

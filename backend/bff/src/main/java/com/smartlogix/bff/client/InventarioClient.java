@@ -23,6 +23,9 @@ public interface InventarioClient {
     @PostMapping("/api/inventario/productos")
     ProductoDTO crearProducto(@RequestBody ProductoDTO productoDTO);
 
+    @PutMapping("/api/inventario/productos/{sku}")
+    ProductoDTO actualizarProducto(@PathVariable("sku") String sku, @RequestBody ProductoDTO productoDTO);
+
     @PutMapping("/api/inventario/productos/{sku}/descontar-stock")
     void descontarStock(@PathVariable("sku") String sku, @RequestParam("cantidad") Integer cantidad);
 }

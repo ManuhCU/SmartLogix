@@ -1,7 +1,7 @@
 import React from 'react';
 import './ProductCard.css';
 
-const ProductCard = ({ producto, onBuyClick }) => {
+const ProductCard = ({ producto, onAddToCart }) => {
   const isOutOfStock = !producto.disponible || producto.stockActual <= 0;
 
   // Creamos un color de gradiente único basado en el SKU para darle un toque dinámico a cada card
@@ -40,11 +40,11 @@ const ProductCard = ({ producto, onBuyClick }) => {
           <span className="product-price">${producto.precio.toLocaleString()}</span>
           <button 
             className="btn-primary" 
-            onClick={() => onBuyClick(producto)}
+            onClick={() => onAddToCart(producto)}
             disabled={isOutOfStock}
           >
-            <i className="ri-shopping-cart-line"></i>
-            Comprar
+            <i className="ri-add-circle-line"></i>
+            Agregar
           </button>
         </div>
       </div>
