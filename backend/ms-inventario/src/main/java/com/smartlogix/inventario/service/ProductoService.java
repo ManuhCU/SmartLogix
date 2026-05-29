@@ -7,5 +7,6 @@ public interface ProductoService {
     List<ProductoDTO> obtenerTodos();
     ProductoDTO obtenerPorSku(String sku);
     ProductoDTO crearProducto(ProductoDTO productoDTO);
+    ProductoDTO actualizarProducto(String sku, ProductoDTO productoDTO);
     void actualizarStock(String sku, Integer cantidadComprada);
 }

@@ -22,6 +22,7 @@
         <module>bff</module>
         <module>ms-inventario</module>
         <module>ms-pedidos</module>
+        <module>ms-usuarios</module>
     </modules>
 
     <properties>

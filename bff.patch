@@ -1,0 +1,91 @@
+﻿diff --git a/backend/bff/src/main/java/com/smartlogix/bff/client/InventarioClient.java b/backend/bff/src/main/java/com/smartlogix/bff/client/InventarioClient.java
+index 71034bc..d8a5380 100644
+--- a/backend/bff/src/main/java/com/smartlogix/bff/client/InventarioClient.java
++++ b/backend/bff/src/main/java/com/smartlogix/bff/client/InventarioClient.java
+@@ -23,6 +23,9 @@ public interface InventarioClient {
+     @PostMapping("/api/inventario/productos")
+     ProductoDTO crearProducto(@RequestBody ProductoDTO productoDTO);
+ 
++    @PutMapping("/api/inventario/productos/{sku}")
++    ProductoDTO actualizarProducto(@PathVariable("sku") String sku, @RequestBody ProductoDTO productoDTO);
++
+     @PutMapping("/api/inventario/productos/{sku}/descontar-stock")
+     void descontarStock(@PathVariable("sku") String sku, @RequestParam("cantidad") Integer cantidad);
+ }
+diff --git a/backend/bff/src/main/java/com/smartlogix/bff/controller/BffController.java b/backend/bff/src/main/java/com/smartlogix/bff/controller/BffController.java
+index de27994..1ae9695 100644
+--- a/backend/bff/src/main/java/com/smartlogix/bff/controller/BffController.java
++++ b/backend/bff/src/main/java/com/smartlogix/bff/controller/BffController.java
+@@ -92,6 +92,13 @@ public class BffController {
+         return new ResponseEntity<>(creado, HttpStatus.CREATED);
+     }
+ 
++    @PutMapping("/store/productos/{sku}")
++    public ResponseEntity<ProductoDTO> actualizarProducto(@PathVariable String sku,
++                                                         @RequestBody ProductoDTO productoDTO) {
++        ProductoDTO actualizado = inventarioClient.actualizarProducto(sku, productoDTO);
++        return ResponseEntity.ok(actualizado);
++    }
++
+     @PutMapping("/store/productos/{sku}/descontar-stock")
+     public ResponseEntity<Void> descontarStock(@PathVariable String sku, @RequestParam Integer cantidad) {
+         inventarioClient.descontarStock(sku, cantidad);
+diff --git a/backend/bff/src/main/java/com/smartlogix/bff/client/UsuariosClient.java b/backend/bff/src/main/java/com/smartlogix/bff/client/UsuariosClient.java
+new file mode 100644
+index 0000000..8ab9737
+--- /dev/null
++++ b/backend/bff/src/main/java/com/smartlogix/bff/client/UsuariosClient.java
+@@ -0,0 +1,32 @@
++package com.smartlogix.bff.client;
++
++import com.smartlogix.bff.model.LoginRequest;
++import com.smartlogix.bff.model.UsuarioDTO;
++import org.springframework.cloud.openfeign.FeignClient;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@FeignClient(name = "ms-usuarios", url = "${smartlogix.usuarios.url}")
++public interface UsuariosClient {
++
++    @GetMapping("/api/usuarios")
++    List<UsuarioDTO> listarTodos();
++
++    @GetMapping("/api/usuarios/{username}")
++    UsuarioDTO obtenerPorUsername(@PathVariable("username") String username);
++
++    @PostMapping("/api/usuarios")
++    UsuarioDTO crearUsuario(@RequestBody UsuarioDTO usuarioDTO, @RequestParam(value = "password", required = false) String password);
++
++    @PostMapping("/api/usuarios/authenticate")
++    UsuarioDTO autenticar(@RequestBody LoginRequest loginRequest);
++
++    @PutMapping("/api/usuarios/{username}")
++    UsuarioDTO actualizarUsuario(@PathVariable("username") String username,
++                                 @RequestBody UsuarioDTO usuarioDTO,
++                                 @RequestParam(value = "password", required = false) String password);
++
++    @DeleteMapping("/api/usuarios/{username}")
++    void eliminarUsuario(@PathVariable("username") String username);
++}
+diff --git a/backend/bff/src/main/java/com/smartlogix/bff/model/UsuarioDTO.java b/backend/bff/src/main/java/com/smartlogix/bff/model/UsuarioDTO.java
+new file mode 100644
+index 0000000..1ae1314
+--- /dev/null
++++ b/backend/bff/src/main/java/com/smartlogix/bff/model/UsuarioDTO.java
+@@ -0,0 +1,15 @@
++package com.smartlogix.bff.model;
++
++import lombok.*;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++public class UsuarioDTO {
++    private Long id;
++    private String username;
++    private String role;
++    private Boolean active;
++}

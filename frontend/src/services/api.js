@@ -19,7 +19,12 @@ export const api = {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      if (response.status === 204) return null;
+      try {
+        return await response.json();
+      } catch (e) {
+        return null;
+      }
     } catch (error) {
       console.error(`Error en ${endpoint}:`, error);
       throw error;
@@ -41,6 +46,50 @@ export const api = {
   // Store endpoints
   async getCatalogo() {
     return this.request('/store/catalogo');
+  },
+
+  async getUsuarios() {
+    return this.request('/users');
+  },
+
+  async createUser(user, password) {
+    const query = password ? `?password=${encodeURIComponent(password)}` : '';
+    return this.request(`/users${query}`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+    });
+  },
+
+  async updateUser(username, user, password) {
+    const query = password ? `?password=${encodeURIComponent(password)}` : '';
+    return this.request(`/users/${encodeURIComponent(username)}${query}`, {
+      method: 'PUT',
+      body: JSON.stringify(user),
+    });
+  },
+
+  async deleteUser(username) {
+    return this.request(`/users/${encodeURIComponent(username)}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async createProduct(product) {
+    return this.request('/store/productos', {
+      method: 'POST',
+      body: JSON.stringify(product),
+    });
+  },
+  async updateProduct(sku, product) {
+    return this.request(`/store/productos/${encodeURIComponent(sku)}`, {
+      method: 'PUT',
+      body: JSON.stringify(product),
+    });
+  },
+  async descontarStock(sku, cantidad) {
+    return this.request(`/store/productos/${encodeURIComponent(sku)}/descontar-stock?cantidad=${encodeURIComponent(cantidad)}`, {
+      method: 'PUT',
+    });
   },
 
   async realizarCompra(pedido) {

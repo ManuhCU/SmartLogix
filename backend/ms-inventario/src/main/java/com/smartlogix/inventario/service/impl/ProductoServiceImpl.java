@@ -43,9 +43,48 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     @Transactional
     public ProductoDTO crearProducto(ProductoDTO productoDTO) {
-        Producto entity = productoFactory.toEntity(productoDTO);
-        Producto guardado = productoRepository.save(entity);
-        return productoFactory.toDTO(guardado);
+        if (productoDTO.getSku() == null || productoDTO.getSku().isBlank()) {
+            throw new RuntimeException("SKU es obligatorio");
+        }
+
+        return productoRepository.findBySku(productoDTO.getSku()).map(existing -> {
+            // Si el SKU ya existe, interpretamos la operación como "agregar stock"
+            Integer adicional = productoDTO.getStockActual() != null ? productoDTO.getStockActual() : 0;
+            existing.setStockActual(existing.getStockActual() + adicional);
+            // Si se envían campos nuevos, actualizarlos también (nombre, descripción, precio)
+            if (productoDTO.getNombre() != null && !productoDTO.getNombre().isBlank()) {
+                existing.setNombre(productoDTO.getNombre());
+            }
+            if (productoDTO.getDescripcion() != null) {
+                existing.setDescripcion(productoDTO.getDescripcion());
+            }
+            if (productoDTO.getPrecio() != null) {
+                existing.setPrecio(productoDTO.getPrecio());
+            }
+            Producto actualizado = productoRepository.save(existing);
+            return productoFactory.toDTO(actualizado);
+        }).orElseGet(() -> {
+            Producto entity = productoFactory.toEntity(productoDTO);
+            Producto guardado = productoRepository.save(entity);
+            return productoFactory.toDTO(guardado);
+        });
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO actualizarProducto(String sku, ProductoDTO productoDTO) {
+        Producto producto = productoRepository.findBySku(sku)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con SKU: " + sku));
+
+        producto.setNombre(productoDTO.getNombre());
+        producto.setDescripcion(productoDTO.getDescripcion());
+        producto.setPrecio(productoDTO.getPrecio());
+        if (productoDTO.getStockActual() != null) {
+            producto.setStockActual(productoDTO.getStockActual());
+        }
+
+        Producto actualizado = productoRepository.save(producto);
+        return productoFactory.toDTO(actualizado);
     }
 
     @Override

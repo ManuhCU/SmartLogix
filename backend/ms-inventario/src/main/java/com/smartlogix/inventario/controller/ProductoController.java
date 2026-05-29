@@ -32,6 +32,12 @@ public class ProductoController {
         return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{sku}")
+    public ResponseEntity<ProductoDTO> actualizarProducto(@PathVariable String sku, @RequestBody ProductoDTO productoDTO) {
+        ProductoDTO actualizado = productoService.actualizarProducto(sku, productoDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
     @PutMapping("/{sku}/descontar-stock")
     public ResponseEntity<Void> descontarStock(@PathVariable String sku, @RequestParam Integer cantidad) {
         productoService.actualizarStock(sku, cantidad);
