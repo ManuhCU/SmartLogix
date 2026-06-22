@@ -1,10 +1,8 @@
-# 📖 Manual Técnico de SmartLogix
-
-Este documento cumple con el requisito de la rúbrica: *Archivo README.md con instrucciones para instalar, ejecutar y probar el componente frontend y microservicios.*
+# Manual Técnico de SmartLogix
 
 ---
 
-## 🖥️ 1. Ejecución del Frontend (React)
+## 1. Ejecución del Frontend (React)
 
 El frontend está desarrollado en React y utiliza NPM como gestor de paquetes.
 
@@ -31,7 +29,7 @@ El frontend está desarrollado en React y utiliza NPM como gestor de paquetes.
 
 ---
 
-## ⚙️ 2. Ejecución del Backend (Microservicios)
+## 2. Ejecución del Backend (Microservicios)
 
 El backend está compuesto por 4 módulos (BFF, ms-inventario, ms-pedidos, ms-usuarios) desarrollados en Spring Boot 3.
 
@@ -47,7 +45,7 @@ Para levantar todo el ecosistema (Bases de datos + Microservicios + Frontend) co
    ```bash
    docker-compose up --build -d
    ```
-3. Verifica que los 8 contenedores estén corriendo (`docker ps`).
+3. Verifica que los contenedores estén corriendo con `docker ps`.
 
 ### Método 2: Ejecución individual local (Para desarrollo)
 1. Levanta únicamente las bases de datos PostgreSQL en contenedores:
@@ -70,11 +68,11 @@ Para levantar todo el ecosistema (Bases de datos + Microservicios + Frontend) co
 
 ---
 
-## 🧪 3. Pruebas Unitarias y Reportes de Cobertura (Jacoco)
+## 3. Pruebas Unitarias y Reportes de Cobertura (Jacoco)
 
-Hemos configurado el plugin **Jacoco** en el `pom.xml` para generar métricas de cobertura de código.
+El proyecto utiliza el plugin Jacoco para generar métricas de cobertura de código.
 
-### ¿Cómo ejecutar las pruebas y generar los reportes?
+### Ejecución de pruebas y generación de reportes:
 1. Navega a la carpeta raíz del backend:
    ```bash
    cd backend
@@ -84,8 +82,6 @@ Hemos configurado el plugin **Jacoco** en el `pom.xml` para generar métricas de
    mvn clean test
    ```
 
-### ¿Dónde encuentro los reportes generados?
-Una vez finalizado el comando anterior con `BUILD SUCCESS`, los reportes HTML gráficos se generarán automáticamente en las siguientes rutas:
-- **Pedidos:** `backend/ms-pedidos/target/site/jacoco/index.html`
-
-Abre el archivo `index.html` en tu navegador web. Ahí verás los gráficos de barras verdes y rojas con el porcentaje exacto de cobertura de código. Tómale capturas de pantalla a esa página web para agregarlas al documento PDF final que te pide la rúbrica.
+### Ubicación de los reportes generados:
+Una vez finalizada la ejecución con éxito, los reportes HTML se generarán automáticamente en las siguientes rutas (ejemplo para ms-pedidos):
+- `backend/ms-pedidos/target/site/jacoco/index.html`
