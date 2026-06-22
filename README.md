@@ -1,91 +1,91 @@
-# SmartLogix - Sistema de Microservicios
+# 📖 Manual Técnico de SmartLogix
 
-Este es el proyecto principal de **SmartLogix** desarrollado para la **Evaluación Parcial 2**.
-La solución es un sistema basado en Microservicios, desarrollado con Spring Boot para el backend y React para el frontend.
+Este documento cumple con el requisito de la rúbrica: *Archivo README.md con instrucciones para instalar, ejecutar y probar el componente frontend y microservicios.*
 
-## Arquitectura
-- **Frontend**: Aplicación en React estructurada como componente NPM.
-- **BFF (Backend For Frontend)**: API Gateway centralizado que interactúa con el frontend y rutea las peticiones.
-- **Microservicio Inventario**: Gestiona el catálogo de productos y su stock.
-- **Microservicio Pedidos**: Gestiona la creación de órdenes de compra. Incluye un **Circuit Breaker** (Resilience4j) para manejar fallos si el servicio de inventario no responde.
-- **Base de Datos**: Patrón Database-per-Service. Se utilizan 2 bases de datos PostgreSQL independientes.
+---
 
-## Requisitos Previos
-- Docker y Docker Compose
-- Java 17+
-- Node.js 18+ y npm
-- Maven
+## 🖥️ 1. Ejecución del Frontend (React)
 
-## Estructura de Directorios
-```
-/SmartLogix
-|-- /backend
-|   |-- /bff                 # Backend For Frontend API
-|   |-- /ms-inventario       # Microservicio de Inventario
-|   |-- /ms-pedidos          # Microservicio de Pedidos
-|   |-- pom.xml              # Maven Parent POM
-|-- /frontend                # Aplicación React
-|-- docker-compose.yml       # Orquestación de contenedores
-```
+El frontend está desarrollado en React y utiliza NPM como gestor de paquetes.
 
-## Ejecución con Docker Compose
+### Requisitos previos:
+- Node.js (v16 o superior)
+- NPM (v8 o superior)
 
-### Opción 1: Script Automático (Recomendado)
-Ejecuta el script correspondiente a tu sistema operativo:
+### Pasos para ejecución local (Sin Docker):
+1. Abre una terminal y navega a la carpeta del frontend:
+   ```bash
+   cd frontend
+   ```
+2. Instala las dependencias listadas en el `package.json`:
+   ```bash
+   npm install
+   ```
+3. Ejecuta el servidor de desarrollo:
+   ```bash
+   npm start
+   ```
+4. La aplicación estará disponible en `http://localhost:3000`.
 
-**Windows:**
-```cmd
-start-docker.bat
-```
+*(Nota: Para que el frontend funcione correctamente, el BFF debe estar corriendo en el puerto 9090).*
 
-**Linux/Mac:**
-```bash
-chmod +x start-docker.sh
-./start-docker.sh
-```
+---
 
-### Opción 2: Manual
-Para levantar toda la infraestructura (Bases de datos, Microservicios, BFF y Frontend):
-```bash
-cd SmartLogix
-docker compose up --build
-```
+## ⚙️ 2. Ejecución del Backend (Microservicios)
 
-### Servicios Disponibles
-Una vez levantados los contenedores, estarán disponibles en:
+El backend está compuesto por 4 módulos (BFF, ms-inventario, ms-pedidos, ms-usuarios) desarrollados en Spring Boot 3.
 
-| Servicio | URL | Descripción |
-|----------|-----|-------------|
-| **Frontend** | http://localhost:3000 | Interfaz de usuario React |
-| **BFF API** | http://localhost:9090 | Backend For Frontend |
-| **MS Inventario** | http://localhost:8081 | Microservicio de Inventario |
-| **MS Pedidos** | http://localhost:8082 | Microservicio de Pedidos |
-| **DB Inventario** | localhost:5432 | PostgreSQL Inventario |
-| **DB Pedidos** | localhost:5433 | PostgreSQL Pedidos |
+### Requisitos previos:
+- Java JDK 17
+- Maven 3.8+
+- Docker Desktop (Para levantar las bases de datos)
 
-### Credenciales de Prueba
-- **Admin**: `admin` / `admin123`
-- **Usuario**: `user1` / `password123`
+### Método 1: Orquestación Completa con Docker Compose (Recomendado)
+Para levantar todo el ecosistema (Bases de datos + Microservicios + Frontend) con un solo comando:
+1. Navega a la raíz del proyecto `SmartLogix`.
+2. Ejecuta:
+   ```bash
+   docker-compose up --build -d
+   ```
+3. Verifica que los 8 contenedores estén corriendo (`docker ps`).
 
-### Comandos Útiles
-```bash
-# Ver estado de contenedores
-docker compose ps
+### Método 2: Ejecución individual local (Para desarrollo)
+1. Levanta únicamente las bases de datos PostgreSQL en contenedores:
+   ```bash
+   docker-compose up db-inventario db-pedidos db-usuarios -d
+   ```
+2. Navega a la carpeta del backend:
+   ```bash
+   cd backend
+   ```
+3. Compila el proyecto maestro:
+   ```bash
+   mvn clean install -DskipTests
+   ```
+4. Navega a la carpeta de cada microservicio y córrelo:
+   ```bash
+   cd ms-inventario
+   mvn spring-boot:run
+   ```
 
-# Ver logs de un servicio específico
-docker compose logs -f frontend
+---
 
-# Detener todos los servicios
-docker compose down
+## 🧪 3. Pruebas Unitarias y Reportes de Cobertura (Jacoco)
 
-# Reconstruir y reiniciar
-docker compose up --build --force-recreate
-```
+Hemos configurado el plugin **Jacoco** en el `pom.xml` para generar métricas de cobertura de código.
 
-## Pruebas y Calidad
-Para correr las pruebas unitarias con JUnit y Mockito, junto con la generación del reporte de cobertura (Jacoco):
-```bash
-cd backend
-mvn clean test
-```
-Los reportes de cobertura estarán disponibles en las carpetas `target/site/jacoco` de cada microservicio.
+### ¿Cómo ejecutar las pruebas y generar los reportes?
+1. Navega a la carpeta raíz del backend:
+   ```bash
+   cd backend
+   ```
+2. Ejecuta el ciclo de pruebas:
+   ```bash
+   mvn clean test
+   ```
+
+### ¿Dónde encuentro los reportes generados?
+Una vez finalizado el comando anterior con `BUILD SUCCESS`, los reportes HTML gráficos se generarán automáticamente en las siguientes rutas:
+- **Pedidos:** `backend/ms-pedidos/target/site/jacoco/index.html`
+
+Abre el archivo `index.html` en tu navegador web. Ahí verás los gráficos de barras verdes y rojas con el porcentaje exacto de cobertura de código. Tómale capturas de pantalla a esa página web para agregarlas al documento PDF final que te pide la rúbrica.

@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class BffController {
 
     private final BffService bffService;
@@ -27,10 +28,6 @@ public class BffController {
     private final UsuariosClient usuariosClient;
     private final InventarioClient inventarioClient;
 
-    public BffController(BffService bffService, AuthService authService) {
-        this.bffService = bffService;
-        this.authService = authService;
-    }
 
     @GetMapping("/store/catalogo")
     public ResponseEntity<List<ProductoDTO>> obtenerCatalogo() {
