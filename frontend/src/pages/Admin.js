@@ -144,16 +144,14 @@ const Admin = () => {
 
     const fetchPedidos = async () => {
         try {
-            // En un caso real, esto traería los pedidos de un endpoint específico
-            // const data = await api.getPedidos();
-            setPedidos([]);
+            const data = await api.getPedidos();
+            setPedidos(data || []);
         } catch (err) {
             console.error('Error fetching pedidos:', err);
         } finally {
             setLoading(false);
         }
     };
-
     const fetchUsuarios = async () => {
         try {
             const data = await api.getUsuarios();
@@ -208,7 +206,7 @@ const Admin = () => {
     };
 
     const handleViewOrder = (pedido) => {
-        alert(`Pedido ${pedido.id}\nCliente: ${pedido.cliente}\nTotal: ${pedido.total}`);
+        alert(`Pedido ${pedido.id}\nProducto SKU: ${pedido.skuProducto}\nCantidad: ${pedido.cantidad}\nTotal: $${pedido.precioTotal}`);
     };
 
     if (loading) {
@@ -386,8 +384,8 @@ const Admin = () => {
                                     <thead>
                                         <tr>
                                             <th>ID Pedido</th>
-                                            <th>Cliente</th>
-                                            <th>Fecha</th>
+                                            <th>SKU Producto</th>
+                                            <th>Cantidad</th>
                                             <th>Total</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
@@ -398,9 +396,9 @@ const Admin = () => {
                                             pedidos.map((pedido) => (
                                                 <tr key={pedido.id}>
                                                     <td>{pedido.id}</td>
-                                                    <td>{pedido.cliente}</td>
-                                                    <td>{pedido.fecha}</td>
-                                                    <td>${pedido.total}</td>
+                                                    <td>{pedido.skuProducto}</td>
+                                                    <td>{pedido.cantidad}</td>
+                                                    <td>${pedido.precioTotal}</td>
                                                     <td>
                                                         <span className="estado-badge">{pedido.estado}</span>
                                                     </td>
