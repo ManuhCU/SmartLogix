@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,6 +55,15 @@ public class PedidoServiceImpl implements PedidoService {
         PedidoDTO responseDTO = pedidoFactory.toDTO(guardado);
         responseDTO.setMensaje("Pedido procesado exitosamente.");
         return responseDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> obtenerTodos() {
+        return pedidoRepository.findAll()
+                .stream()
+                .map(pedidoFactory::toDTO)
+                .collect(Collectors.toList());
     }
 
     /**

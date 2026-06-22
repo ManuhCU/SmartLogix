@@ -40,6 +40,11 @@ public class BffController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/store/pedidos")
+    public ResponseEntity<List<PedidoDTO>> obtenerPedidos() {
+        return ResponseEntity.ok(bffService.obtenerPedidos());
+    }
+
     // Endpoints de autenticación
     @PostMapping("/auth/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {

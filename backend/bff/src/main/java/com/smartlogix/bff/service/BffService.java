@@ -27,4 +27,8 @@ public class BffService {
     public PedidoDTO realizarCompra(PedidoDTO pedidoDTO) {
         return pedidosClient.crearPedido(pedidoDTO);
     }
+
+    public List<PedidoDTO> obtenerPedidos() {
+        return pedidosClient.listarTodos();
+    }
 }

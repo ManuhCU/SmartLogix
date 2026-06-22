@@ -48,6 +48,10 @@ export const api = {
     return this.request('/store/catalogo');
   },
 
+  async getPedidos() {
+    return this.request('/store/pedidos');
+  },
+
   async getUsuarios() {
     return this.request('/users');
   },
