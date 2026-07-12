@@ -206,7 +206,7 @@ const Admin = () => {
     };
 
     const handleViewOrder = (pedido) => {
-        alert(`Pedido ${pedido.id}\nProducto SKU: ${pedido.skuProducto}\nCantidad: ${pedido.cantidad}\nTotal: $${pedido.precioTotal}`);
+        alert(`Pedido ${pedido.id}\nUsuario: ${pedido.username || 'Anónimo'}\nProducto: ${pedido.nombreProducto || pedido.skuProducto}\nCantidad: ${pedido.cantidad}\nTotal: $${pedido.precioTotal}`);
     };
 
     if (loading) {
@@ -384,7 +384,8 @@ const Admin = () => {
                                     <thead>
                                         <tr>
                                             <th>ID Pedido</th>
-                                            <th>SKU Producto</th>
+                                            <th>Usuario</th>
+                                            <th>Producto</th>
                                             <th>Cantidad</th>
                                             <th>Total</th>
                                             <th>Estado</th>
@@ -392,11 +393,19 @@ const Admin = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {pedidos.length > 0 ? (
+                                        {pedidos.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
+                                                    <i className="ri-inbox-line" style={{ fontSize: '2rem', color: 'var(--text-muted)' }}></i>
+                                                    <p>No hay pedidos registrados.</p>
+                                                </td>
+                                            </tr>
+                                        ) : (
                                             pedidos.map((pedido) => (
                                                 <tr key={pedido.id}>
                                                     <td>{pedido.id}</td>
-                                                    <td>{pedido.skuProducto}</td>
+                                                    <td>{pedido.username || 'Anónimo'}</td>
+                                                    <td>{pedido.nombreProducto || pedido.skuProducto}</td>
                                                     <td>{pedido.cantidad}</td>
                                                     <td>${pedido.precioTotal}</td>
                                                     <td>

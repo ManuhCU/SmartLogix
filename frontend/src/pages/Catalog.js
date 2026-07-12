@@ -118,6 +118,15 @@ const Catalog = () => {
     setPurchaseError('');
     setSuccessMsg('');
 
+    const isAuth = localStorage.getItem('isAuthenticated') === 'true';
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+
+    if (!isAuth || !user) {
+      setPurchaseError('Debes iniciar sesión para poder realizar una compra.');
+      return;
+    }
+
     if (cartItems.length === 0) {
       setPurchaseError('El carrito está vacío. Agrega productos antes de pagar.');
       return;
@@ -138,6 +147,8 @@ const Catalog = () => {
         const response = await api.realizarCompra({
           skuProducto: item.sku,
           cantidad: item.cantidad,
+          username: user.username,
+          nombreProducto: item.nombre
         });
 
         if (response && response.estado === 'FALLIDO') {
