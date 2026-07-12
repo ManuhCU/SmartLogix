@@ -80,4 +80,12 @@ class UsuarioServiceImplTest {
 
         assertThrows(ResponseStatusException.class, () -> usuarioService.crearUsuario(requestDto, "pass"));
     }
+    @Test
+    void debeLanzarExcepcionSiUsuarioEstaInactivo() {
+        usuarioMock.setActive(false);
+        LoginRequest request = new LoginRequest("testuser", "password123");
+        when(usuarioRepository.findByUsername("testuser")).thenReturn(Optional.of(usuarioMock));
+
+        assertThrows(ResponseStatusException.class, () -> usuarioService.autenticar(request));
+    }
 }

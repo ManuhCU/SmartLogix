@@ -52,10 +52,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO autenticar(LoginRequest loginRequest) {
-        return usuarioRepository.findByUsername(loginRequest.getUsername())
-                .filter(usuario -> usuario.getPassword().equals(loginRequest.getPassword()))
-                .map(this::toDTO)
+        Usuario usuario = usuarioRepository.findByUsername(loginRequest.getUsername())
+                .filter(u -> u.getPassword().equals(loginRequest.getPassword()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
+
+        if (usuario.getActive() != null && !usuario.getActive()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cuenta inactiva. Contacte al administrador.");
+        }
+
+        return toDTO(usuario);
     }
 
     @Override
