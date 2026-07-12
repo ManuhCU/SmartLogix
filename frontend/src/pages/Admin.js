@@ -416,12 +416,6 @@ const Admin = () => {
                                                     </td>
                                                 </tr>
                                             ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="6" className="empty-cell">
-                                                    No hay pedidos disponibles
-                                                </td>
-                                            </tr>
                                         )}
                                     </tbody>
                                 </table>
