@@ -21,7 +21,13 @@ public class Pedido {
     private Long id;
 
     @Column(nullable = false)
+    private String username;
+
+    @Column(nullable = false)
     private String skuProducto;
+
+    @Column(nullable = false)
+    private String nombreProducto;
 
     @Column(nullable = false)
     private Integer cantidad;

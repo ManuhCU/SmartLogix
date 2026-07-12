@@ -49,6 +49,7 @@ public class PedidoServiceImpl implements PedidoService {
         // 5. Guardar el pedido
         Pedido entity = pedidoFactory.toEntity(pedidoDTO);
         entity.setPrecioTotal(precioTotal);
+        entity.setNombreProducto(producto.getNombre());
         entity.setEstado("COMPLETADO");
 
         Pedido guardado = pedidoRepository.save(entity);
@@ -75,6 +76,7 @@ public class PedidoServiceImpl implements PedidoService {
         
         Pedido entity = pedidoFactory.toEntity(pedidoDTO);
         entity.setPrecioTotal(BigDecimal.ZERO); // No sabemos el precio actual
+        entity.setNombreProducto(pedidoDTO.getNombreProducto() != null ? pedidoDTO.getNombreProducto() : "Desconocido");
         entity.setEstado("FALLIDO");
         
         Pedido guardado = pedidoRepository.save(entity);
