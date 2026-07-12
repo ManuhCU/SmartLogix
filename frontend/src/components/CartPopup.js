@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './CartPopup.css';
+import { api } from '../services/api';
 
 const CartPopup = ({
   cartItems,
@@ -18,6 +19,71 @@ const CartPopup = ({
   error,
   successMessage,
 }) => {
+  const [cardForm, setCardForm] = useState({ cardHolderName: '', cardNumber: '', cardExpiry: '', cardCvv: '' });
+  const [cardSaving, setCardSaving] = useState(false);
+  const [cardMessage, setCardMessage] = useState('');
+  const [savedCard, setSavedCard] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.cardHolderName) {
+          setSavedCard({
+            cardHolderName: parsedUser.cardHolderName,
+            cardNumber: parsedUser.cardNumber,
+            cardExpiry: parsedUser.cardExpiry,
+            cardCvv: parsedUser.cardCvv,
+          });
+        }
+      } catch (error) {
+        console.error('No se pudo leer la tarjeta guardada', error);
+      }
+    }
+  }, []);
+
+  const handleCardInputChange = (event) => {
+    const { name, value } = event.target;
+    setCardForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleSaveCard = async (event) => {
+    event.preventDefault();
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      setCardMessage('Debes iniciar sesión para guardar una tarjeta.');
+      return;
+    }
+
+    const parsedUser = JSON.parse(storedUser);
+    setCardSaving(true);
+    setCardMessage('');
+
+    try {
+      const updatedUser = await api.updateUser(parsedUser.username, {
+        username: parsedUser.username,
+        role: parsedUser.role,
+        active: true,
+        cardHolderName: cardForm.cardHolderName,
+        cardNumber: cardForm.cardNumber,
+        cardExpiry: cardForm.cardExpiry,
+        cardCvv: cardForm.cardCvv,
+      });
+
+      const nextUser = { ...parsedUser, ...updatedUser };
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      setSavedCard({ ...updatedUser });
+      setCardForm({ cardHolderName: '', cardNumber: '', cardExpiry: '', cardCvv: '' });
+      setCardMessage('Tarjeta guardada correctamente.');
+    } catch (error) {
+      setCardMessage('No se pudo guardar la tarjeta. Intenta nuevamente.');
+      console.error(error);
+    } finally {
+      setCardSaving(false);
+    }
+  };
+
   return (
     <div className="cart-overlay" onClick={onClose}>
       <div className="cart-panel glass-panel" onClick={(e) => e.stopPropagation()}>
@@ -78,6 +144,58 @@ const CartPopup = ({
               </button>
             </div>
             {discountMessage && <p className="discount-message">{discountMessage}</p>}
+          </div>
+
+          <div className="discount-section">
+            <label>Guardar tarjeta para pagos rápidos</label>
+            <form onSubmit={handleSaveCard} style={{ display: 'grid', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <input
+                className="input-glass"
+                name="cardHolderName"
+                placeholder="Nombre en la tarjeta"
+                value={cardForm.cardHolderName}
+                onChange={handleCardInputChange}
+                required
+              />
+              <input
+                className="input-glass"
+                name="cardNumber"
+                placeholder="Número de tarjeta"
+                value={cardForm.cardNumber}
+                onChange={handleCardInputChange}
+                required
+                maxLength="19"
+              />
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <input
+                  className="input-glass"
+                  name="cardExpiry"
+                  placeholder="MM/AA"
+                  value={cardForm.cardExpiry}
+                  onChange={handleCardInputChange}
+                  required
+                  maxLength="5"
+                />
+                <input
+                  className="input-glass"
+                  name="cardCvv"
+                  placeholder="CVV"
+                  value={cardForm.cardCvv}
+                  onChange={handleCardInputChange}
+                  required
+                  maxLength="4"
+                />
+              </div>
+              <button className="btn-secondary" type="submit" disabled={cardSaving}>
+                {cardSaving ? 'Guardando...' : 'Guardar tarjeta'}
+              </button>
+            </form>
+            {cardMessage && <p className="discount-message">{cardMessage}</p>}
+            {savedCard && (
+              <p className="discount-message" style={{ marginTop: '0.5rem' }}>
+                Tarjeta guardada para este usuario: {savedCard.cardNumber?.slice(-4)} · {savedCard.cardExpiry}
+              </p>
+            )}
           </div>
 
           <div className="cart-summary">
