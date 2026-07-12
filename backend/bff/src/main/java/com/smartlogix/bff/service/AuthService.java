@@ -18,7 +18,7 @@ public class AuthService {
     public User authenticate(String username, String password) {
         LoginRequest loginRequest = new LoginRequest(username, password);
         UsuarioDTO usuario = usuariosClient.autenticar(loginRequest);
-        return new User(usuario.getUsername(), password, usuario.getRole());
+        return new User(usuario.getUsername(), password, usuario.getRole(), usuario.getCardHolderName(), usuario.getCardNumber(), usuario.getCardExpiry(), usuario.getCardCvv());
     }
 
     public List<UsuarioDTO> getAllUsers() {
@@ -27,6 +27,6 @@ public class AuthService {
 
     public User getUserByUsername(String username) {
         UsuarioDTO usuario = usuariosClient.obtenerPorUsername(username);
-        return new User(usuario.getUsername(), null, usuario.getRole());
+        return new User(usuario.getUsername(), null, usuario.getRole(), usuario.getCardHolderName(), usuario.getCardNumber(), usuario.getCardExpiry(), usuario.getCardCvv());
     }
 }

@@ -45,6 +45,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .password(password)
                 .role(usuarioDTO.getRole() == null ? "USER" : usuarioDTO.getRole())
                 .active(usuarioDTO.getActive() == null ? true : usuarioDTO.getActive())
+                .cardHolderName(usuarioDTO.getCardHolderName())
+                .cardNumber(usuarioDTO.getCardNumber())
+                .cardExpiry(usuarioDTO.getCardExpiry())
+                .cardCvv(usuarioDTO.getCardCvv())
                 .build();
         Usuario guardado = usuarioRepository.save(usuario);
         return toDTO(guardado);
@@ -81,6 +85,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioDTO.getActive() != null) {
             usuario.setActive(usuarioDTO.getActive());
         }
+        if (usuarioDTO.getCardHolderName() != null) {
+            usuario.setCardHolderName(usuarioDTO.getCardHolderName());
+        }
+        if (usuarioDTO.getCardNumber() != null) {
+            usuario.setCardNumber(usuarioDTO.getCardNumber());
+        }
+        if (usuarioDTO.getCardExpiry() != null) {
+            usuario.setCardExpiry(usuarioDTO.getCardExpiry());
+        }
+        if (usuarioDTO.getCardCvv() != null) {
+            usuario.setCardCvv(usuarioDTO.getCardCvv());
+        }
         if (password != null && !password.isEmpty()) {
             usuario.setPassword(password);
         }
@@ -95,6 +111,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .username(usuario.getUsername())
                 .role(usuario.getRole())
                 .active(usuario.getActive())
+                .cardHolderName(usuario.getCardHolderName())
+                .cardNumber(usuario.getCardNumber())
+                .cardExpiry(usuario.getCardExpiry())
+                .cardCvv(usuario.getCardCvv())
                 .build();
     }
 }

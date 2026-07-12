@@ -80,6 +80,40 @@ class UsuarioServiceImplTest {
 
         assertThrows(ResponseStatusException.class, () -> usuarioService.crearUsuario(requestDto, "pass"));
     }
+
+    @Test
+    void debeGuardarDatosDeTarjetaAlCrearUsuario() {
+        UsuarioDTO requestDto = UsuarioDTO.builder()
+                .username("newuser")
+                .cardHolderName("Ana Pérez")
+                .cardNumber("4111111111111111")
+                .cardExpiry("12/30")
+                .cardCvv("123")
+                .build();
+
+        Usuario usuarioGuardado = Usuario.builder()
+                .id(2L)
+                .username("newuser")
+                .password("password")
+                .role("USER")
+                .active(true)
+                .cardHolderName("Ana Pérez")
+                .cardNumber("4111111111111111")
+                .cardExpiry("12/30")
+                .cardCvv("123")
+                .build();
+
+        when(usuarioRepository.existsByUsername("newuser")).thenReturn(false);
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioGuardado);
+
+        UsuarioDTO resultado = usuarioService.crearUsuario(requestDto, "password");
+
+        assertEquals("Ana Pérez", resultado.getCardHolderName());
+        assertEquals("4111111111111111", resultado.getCardNumber());
+        assertEquals("12/30", resultado.getCardExpiry());
+        assertEquals("123", resultado.getCardCvv());
+    }
+
     @Test
     void debeLanzarExcepcionSiUsuarioEstaInactivo() {
         usuarioMock.setActive(false);

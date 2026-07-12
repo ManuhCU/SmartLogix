@@ -50,7 +50,7 @@ public class BffController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
             User user = authService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-            return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", user.getUsername(), user.getRole()));
+            return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", user.getUsername(), user.getRole(), user.getCardHolderName(), user.getCardNumber(), user.getCardExpiry(), user.getCardCvv()));
         } catch (Exception ex) {
             return ResponseEntity.status(401).body(new LoginResponse(false, "Usuario o contraseña inválidos"));
         }
@@ -60,7 +60,7 @@ public class BffController {
     public ResponseEntity<LoginResponse> verify(@RequestParam String username) {
         try {
             User user = authService.getUserByUsername(username);
-            return ResponseEntity.ok(new LoginResponse(true, "Usuario válido", user.getUsername(), user.getRole()));
+            return ResponseEntity.ok(new LoginResponse(true, "Usuario válido", user.getUsername(), user.getRole(), user.getCardHolderName(), user.getCardNumber(), user.getCardExpiry(), user.getCardCvv()));
         } catch (Exception ex) {
             return ResponseEntity.status(404).body(new LoginResponse(false, "Usuario no encontrado"));
         }

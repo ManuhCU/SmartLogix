@@ -27,4 +27,16 @@ public class Usuario {
 
     @Column(nullable = false)
     private Boolean active;
+
+    @Column(name = "card_holder_name")
+    private String cardHolderName;
+
+    @Column(name = "card_number")
+    private String cardNumber;
+
+    @Column(name = "card_expiry")
+    private String cardExpiry;
+
+    @Column(name = "card_cvv")
+    private String cardCvv;
 }

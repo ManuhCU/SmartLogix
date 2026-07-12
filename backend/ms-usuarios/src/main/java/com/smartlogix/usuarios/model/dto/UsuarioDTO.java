@@ -12,4 +12,8 @@ public class UsuarioDTO {
     private String username;
     private String role;
     private Boolean active;
+    private String cardHolderName;
+    private String cardNumber;
+    private String cardExpiry;
+    private String cardCvv;
 }
