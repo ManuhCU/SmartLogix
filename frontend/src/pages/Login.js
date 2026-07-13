@@ -23,6 +23,10 @@ const Login = () => {
                 localStorage.setItem('user', JSON.stringify({
                     username: data.username,
                     role: data.role,
+                    cardHolderName: data.cardHolderName || '',
+                    cardNumber: data.cardNumber || '',
+                    cardExpiry: data.cardExpiry || '',
+                    cardCvv: data.cardCvv || '',
                 }));
                 localStorage.setItem('isAuthenticated', 'true');
 
