@@ -122,4 +122,38 @@ class UsuarioServiceImplTest {
 
         assertThrows(ResponseStatusException.class, () -> usuarioService.autenticar(request));
     }
+
+    @Test
+    void testObtenerTodos() {
+        when(usuarioRepository.findAll()).thenReturn(java.util.Collections.singletonList(usuarioMock));
+        java.util.List<UsuarioDTO> users = usuarioService.obtenerTodos();
+        assertFalse(users.isEmpty());
+    }
+
+    @Test
+    void testObtenerPorUsername() {
+        when(usuarioRepository.findByUsername("testuser")).thenReturn(Optional.of(usuarioMock));
+        UsuarioDTO user = usuarioService.obtenerPorUsername("testuser");
+        assertNotNull(user);
+    }
+
+    @Test
+    void testEliminarPorUsername() {
+        when(usuarioRepository.findByUsername("testuser")).thenReturn(Optional.of(usuarioMock));
+        doNothing().when(usuarioRepository).delete(usuarioMock);
+        usuarioService.eliminarPorUsername("testuser");
+        verify(usuarioRepository, times(1)).delete(any());
+    }
+
+    @Test
+    void testActualizarUsuario() {
+        UsuarioDTO requestDto = UsuarioDTO.builder().username("testuser").build();
+        when(usuarioRepository.findByUsername("testuser")).thenReturn(Optional.of(usuarioMock));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioMock);
+
+        UsuarioDTO resultado = usuarioService.actualizarUsuario("testuser", requestDto, "newPass");
+
+        assertNotNull(resultado);
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+    }
 }

@@ -75,6 +75,14 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Application.class</exclude>
+                        <exclude>**/*Seeder.class</exclude>
+                        <exclude>**/*Factory.class</exclude>
+                        <exclude>**/model/**/*.class</exclude> <!-- Since models are mostly Lombok, we can exclude them too if they don't have business logic, but lombok.config already handles this. -->
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

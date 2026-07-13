@@ -109,4 +109,46 @@ class ProductoServiceImplTest {
         assertEquals("Stock insuficiente para el SKU: SKU-123", exception.getMessage());
         verify(productoRepository, never()).save(any());
     }
+
+    @Test
+    void testObtenerTodos() {
+        when(productoRepository.findAll()).thenReturn(java.util.Collections.singletonList(productoMock));
+        when(productoFactory.toDTO(any())).thenReturn(productoDTOMock);
+        java.util.List<ProductoDTO> list = productoService.obtenerTodos();
+        assertFalse(list.isEmpty());
+    }
+
+    @Test
+    void testCrearProductoNuevo() {
+        when(productoRepository.findBySku("SKU-123")).thenReturn(Optional.empty());
+        when(productoFactory.toEntity(any())).thenReturn(productoMock);
+        when(productoRepository.save(any())).thenReturn(productoMock);
+        when(productoFactory.toDTO(any())).thenReturn(productoDTOMock);
+        ProductoDTO res = productoService.crearProducto(productoDTOMock);
+        assertNotNull(res);
+    }
+
+    @Test
+    void testCrearProductoExistente() {
+        when(productoRepository.findBySku("SKU-123")).thenReturn(Optional.of(productoMock));
+        when(productoRepository.save(any())).thenReturn(productoMock);
+        when(productoFactory.toDTO(any())).thenReturn(productoDTOMock);
+        ProductoDTO res = productoService.crearProducto(productoDTOMock);
+        assertNotNull(res);
+    }
+
+    @Test
+    void testCrearProductoSinSku() {
+        ProductoDTO p = new ProductoDTO();
+        assertThrows(RuntimeException.class, () -> productoService.crearProducto(p));
+    }
+
+    @Test
+    void testActualizarProducto() {
+        when(productoRepository.findBySku("SKU-123")).thenReturn(Optional.of(productoMock));
+        when(productoRepository.save(any())).thenReturn(productoMock);
+        when(productoFactory.toDTO(any())).thenReturn(productoDTOMock);
+        ProductoDTO res = productoService.actualizarProducto("SKU-123", productoDTOMock);
+        assertNotNull(res);
+    }
 }
