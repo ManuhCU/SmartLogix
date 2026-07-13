@@ -114,13 +114,13 @@ const Catalog = () => {
     return cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (paymentData) => {
     setPurchaseError('');
     setSuccessMsg('');
 
     const isAuth = localStorage.getItem('isAuthenticated') === 'true';
     const userData = localStorage.getItem('user');
-    const user = userData ? JSON.parse(userData) : null;
+    let user = userData ? JSON.parse(userData) : null;
 
     if (!isAuth || !user) {
       setPurchaseError('Debes iniciar sesión para poder realizar una compra.');
@@ -141,6 +141,22 @@ const Catalog = () => {
     setCheckoutLoading(true);
 
     try {
+      if (paymentData && paymentData.saveNewCard && !paymentData.useSavedCard) {
+        try {
+          const updatedUser = await api.updateUser(user.username, {
+            username: user.username,
+            role: user.role,
+            active: true,
+            ...paymentData.newCard
+          });
+          user = { ...user, ...updatedUser };
+          localStorage.setItem('user', JSON.stringify(user));
+        } catch (err) {
+          console.error('Error al guardar la tarjeta', err);
+          // Podemos continuar con la compra aunque falle el guardado de tarjeta
+        }
+      }
+
       const orderedItems = [];
 
       for (const item of cartItems) {
